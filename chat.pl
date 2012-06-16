@@ -45,10 +45,7 @@ sub post {
     $self->response->header(
         'Access-Control-Allow-Origin' => '*');
     my $data = decode_json($self->request->content);
-    my $message = encode_json({
-        channel => $data->{channel},
-        message => $data->{message},
-    });
+    my $message = encode_json($data);       # TODO: Validation
     $redis->rpush("client:$uuid:log",$message);
     $redis->ltrim("client:$uuid:log",0,10);
     $redis->rpush("client:$_:queue",$message) for $clients->($data->{channel});
